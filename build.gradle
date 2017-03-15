@@ -1,7 +1,18 @@
-group 'me.nicholasnadeau'
-version '0.1.0'
+plugins {
+    // https://github.com/google/osdetector-gradle-plugin
+    id "com.google.osdetector" version "1.4.0"
+    id 'java'
+    id 'idea'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
 
-apply plugin: 'java'
+group 'me.nicholasnadeau'
+
+if (project.hasProperty('tag')) {
+    version = project.tag
+} else {
+    version = '0'
+}
 
 sourceCompatibility = 1.6
 
@@ -16,9 +27,16 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
+    if (osdetector.classifier != 'windows-x86_32') {
+        // http://mvnrepository.com/artifact/io.netty/netty-tcnative
+        compile group: 'io.netty', name: 'netty-tcnative', version: '1.1.33.Fork15', classifier: osdetector.classifier
+    }
+
     // https://mvnrepository.com/artifact/io.netty/netty-all
     compile group: 'io.netty', name: 'netty-all', version: '4.1.9.Final'
 
-    // Communication protocol
-    compile name: 'robot-communication-packet-proto-0.2.4'
+    // local libs
+    compile fileTree(dir: 'libs', include: '*.jar')
 }
+
+shadowJar.archiveName = "$project.name-$project.version-all.jar"
