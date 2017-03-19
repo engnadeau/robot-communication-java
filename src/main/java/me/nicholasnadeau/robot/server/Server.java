@@ -1,15 +1,24 @@
 package me.nicholasnadeau.robot.server;
 
-import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.DatagramChannel;
-import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.GlobalEventExecutor;
+import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
+
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created on 2017-03-15.
@@ -17,34 +26,38 @@ import io.netty.handler.logging.LoggingHandler;
  * Copyright Nicholas Nadeau 2017.
  */
 public class Server implements Runnable {
-    EventLoopGroup eventLoopGroup;
-    private int port;
-    private String host;
-
+    private Channel channel;
+    private InetSocketAddress inetSocketAddress;
+    private EventLoopGroup workerGroup;
+    private EventLoopGroup bossGroup;
+    private ChannelGroup statusGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public Server(String host, int port) {
-        this.port = port;
-        this.host = host;
+        this.inetSocketAddress = new InetSocketAddress(host, port);
     }
 
     public int getPort() {
-        return port;
+        return inetSocketAddress.getPort();
     }
 
     @Override
     public void run() {
-        eventLoopGroup = new NioEventLoopGroup(1);
+        bossGroup = new NioEventLoopGroup(1);
+        workerGroup = new NioEventLoopGroup();
 
         try {
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(eventLoopGroup)
-                    .channel(NioDatagramChannel.class)
-                    .option(ChannelOption.SO_BROADCAST, true)
-                    .handler(new ServerInitializer());
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    .childHandler(new ServerInitializer(statusGroup));
 
-            ChannelFuture f = bootstrap.bind(this.getHost(), this.getPort()).sync();
-            System.out.println(String.format("Server bound to:\t%s", f.channel().localAddress()));
-            f.channel().closeFuture().sync();
+            final ChannelFuture channelFuture = bootstrap.bind(inetSocketAddress).sync();
+            channel = channelFuture.channel();
+
+            // await until channel in closed
+            channel.closeFuture().sync();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -52,12 +65,23 @@ public class Server implements Runnable {
         }
     }
 
-    private void close() {
-        // Shut down all event loops to terminate all threads.
-        eventLoopGroup.shutdownGracefully();
+    public void close() {
+        try {
+            channel.close();
+        } catch (NullPointerException e) {
+
+        }
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
     }
 
-    public String getHost() {
-        return host;
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void publish(Packet packet) {
+        System.out.println(String.format("Publishing to:\t%s", statusGroup));
+        statusGroup.writeAndFlush(packet);
     }
 }
