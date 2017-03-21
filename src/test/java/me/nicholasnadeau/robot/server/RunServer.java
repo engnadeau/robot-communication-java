@@ -1,10 +1,9 @@
 package me.nicholasnadeau.robot.server;
 
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
 /**
  * Created on 2017-03-15.
@@ -12,10 +11,10 @@ import java.net.UnknownHostException;
  * Copyright Nicholas Nadeau 2017.
  */
 public class RunServer {
-    static private final Logger logger = LogManager.getLogger();
+    static private final Logger logger = Logger.getLogger(RunServer.class.getSimpleName());
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        logger.info("JVM version:\t{}", System.getProperty("java.version"));
+        logger.info("JVM version:\t" + System.getProperty("java.version"));
 
         // start server
         final Server server = new Server("localhost", 1234);
@@ -29,7 +28,7 @@ public class RunServer {
             if (server.getChannel() != null) {
                 if (server.getChannel().isActive()) {
                     logger.info("Server is ready");
-                    logger.info("Server channel bound to:\t{}", server.getChannel().localAddress());
+                    logger.info("Server channel bound to:\t" + server.getChannel().localAddress());
                     isServerReady = true;
                 }
             }
@@ -45,7 +44,7 @@ public class RunServer {
 
                 for (int i = 0; i < 100; i++) {
                     Packet packet = Packet.newBuilder().setCommandId(Packet.CommandID.KEEP_ALIVE).build();
-                    logger.info("Publish:\t{}", i);
+                    logger.info("Publish:\t" + i);
                     server.publish(packet);
                     try {
                         Thread.sleep(1);

@@ -1,8 +1,6 @@
 package me.nicholasnadeau.robot.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -12,15 +10,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created on 2017-03-15.
@@ -28,7 +22,7 @@ import java.util.List;
  * Copyright Nicholas Nadeau 2017.
  */
 public class Server implements Runnable {
-    static private final Logger logger = LogManager.getLogger();
+    static private final Logger logger = Logger.getLogger(Server.class.getSimpleName());
     private Channel channel;
     private InetSocketAddress inetSocketAddress;
     private EventLoopGroup workerGroup;
@@ -88,7 +82,7 @@ public class Server implements Runnable {
     }
 
     public void publish(Packet packet) {
-        logger.info("Publishing to:\t{}", statusGroup);
+        logger.info("Publishing to:\t" + statusGroup);
         statusGroup.writeAndFlush(packet);
     }
 }
