@@ -11,3 +11,6 @@ deploy:
   file: robot-communication-*.jar
   on:
     repo: nnadeau/robot-communication-java
+    tags: true
+notifications:
+  email: false
