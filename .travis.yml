@@ -3,11 +3,15 @@ jdk:
 - oraclejdk7
 - openjdk6
 before_install:
-- chmod +x gradlew
+- gradle clean
+script:
+- gradle -Ptag=$TRAVIS_TAG shadowJar
 deploy:
+  skip_cleanup: true
   provider: releases
   api_key:
     secure: Q19jN8B9ys+jpAMnIriyvKYjIqO5vzfVOpasAY6UBrkW7QgVJcJMFExg9n9YVXytQKl6irG0KXcxLql43ul7W48SxsIJPGt4P31QnCHO5w0n7bcuv1HO4VUGgPebqY+Bia8Ss59FP2h/PBJwVQrf6IJTNOdu8t/luAh8ZXxVeJehu++YoN2pm9Tvup2ujvTFjYaG7oVp7mDdkRklcKbeAFp7S/TZ96SM+FKC3JBr49vzqXm+tqbHmGk9b6hO0Ikdmre7Eyep6x6tmC/J1/QYy0QGeYjJk5xMEqqJ74wZUagjkdB1APQHehOelh93Gt3cB7Kt84reRYDf2BrGVI/kTdExlHsAOuXoNUDy5YcgnXpJHq+XOQpzFjNrPNaXVBYKogKj9dinueE+woiNyna/zshImgkcV9hwgP8qjDUAXHwyGiHPFUF5N7gQ5LIWvvwHbgoxur2eu7voJLEz301fp4coxwgCKtbuZSxk9AUD4/9JlJoCg6oCp2VNiVTiKelo3dY6OmMxfsf9W2v6tyVqHQMWOK2uM7EldmZbtS9oxjLXWgTibWf++gcK2OCwqQBG1QkMlJ2HBtNke8p5TNhal6RJFlp12Lgcd+nlHLKTwqpgZNI9LKQpnEHqc5C68BfKifOlZuwybg5dgyud4yAPkSUpwiwJGAPF8TNCyXDmEvE=
+  file_glob: true
   file: robot-communication-*.jar
   on:
     repo: nnadeau/robot-communication-java
