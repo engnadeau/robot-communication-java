@@ -15,6 +15,8 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.List;
  * Copyright Nicholas Nadeau 2017.
  */
 public class Server implements Runnable {
+    static private final Logger logger = LogManager.getLogger();
     private Channel channel;
     private InetSocketAddress inetSocketAddress;
     private EventLoopGroup workerGroup;
@@ -34,6 +37,10 @@ public class Server implements Runnable {
 
     public Server(String host, int port) {
         this.inetSocketAddress = new InetSocketAddress(host, port);
+    }
+
+    public ChannelGroup getStatusGroup() {
+        return statusGroup;
     }
 
     public int getPort() {
@@ -81,7 +88,7 @@ public class Server implements Runnable {
     }
 
     public void publish(Packet packet) {
-        System.out.println(String.format("Publishing to:\t%s", statusGroup));
+        logger.info("Publishing to:\t{}", statusGroup);
         statusGroup.writeAndFlush(packet);
     }
 }

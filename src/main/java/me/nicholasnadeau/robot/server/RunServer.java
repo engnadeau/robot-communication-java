@@ -1,13 +1,10 @@
 package me.nicholasnadeau.robot.server;
 
-import io.netty.handler.logging.LoggingHandler;
-import me.nicholasnadeau.robot.communication.packet.PacketProtos;
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.locks.Condition;
-import java.util.logging.Logger;
 
 /**
  * Created on 2017-03-15.
@@ -15,11 +12,10 @@ import java.util.logging.Logger;
  * Copyright Nicholas Nadeau 2017.
  */
 public class RunServer {
-    public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        final String LOGGER_NAME = LoggingHandler.class.getName();
-        final Logger logger = Logger.getLogger(LOGGER_NAME);
+    static private final Logger logger = LogManager.getLogger();
 
-        System.out.println(String.format("JVM version:\t%s", System.getProperty("java.version")));
+    public static void main(String[] args) throws UnknownHostException, InterruptedException {
+        logger.info("JVM version:\t{}", System.getProperty("java.version"));
 
         // start server
         final Server server = new Server("localhost", 1234);
@@ -32,8 +28,8 @@ public class RunServer {
         while (!isServerReady) {
             if (server.getChannel() != null) {
                 if (server.getChannel().isActive()) {
-                    System.out.println("Server is ready");
-                    System.out.println(String.format("Server channel bound to:\t%s", server.getChannel().localAddress()));
+                    logger.info("Server is ready");
+                    logger.info("Server channel bound to:\t{}", server.getChannel().localAddress());
                     isServerReady = true;
                 }
             }
@@ -43,12 +39,16 @@ public class RunServer {
         Thread testThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                while (!(server.getStatusGroup().size() > 0)) {
+
+                }
+
                 for (int i = 0; i < 100; i++) {
                     Packet packet = Packet.newBuilder().setCommandId(Packet.CommandID.KEEP_ALIVE).build();
-                    System.out.println(String.format("Publish:\t%d", i));
+                    logger.info("Publish:\t{}", i);
                     server.publish(packet);
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
