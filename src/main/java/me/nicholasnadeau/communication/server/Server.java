@@ -10,26 +10,16 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import me.nicholasnadeau.communication.AbstractCommunicator;
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
 
 import java.net.InetSocketAddress;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 
-/**
- * Created on 2017-03-15.
- * <p>
- * Copyright Nicholas Nadeau 2017.
- */
-public class Server implements Runnable {
-    static private final Logger LOGGER = Logger.getLogger(Server.class.getSimpleName());
-    private Channel channel;
-    private InetSocketAddress inetSocketAddress;
+public class Server extends AbstractCommunicator {
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
     private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private Queue<Packet> incomingQueue = new ConcurrentLinkedQueue<Packet>();
 
     public Server(String host, int port) {
         this.inetSocketAddress = new InetSocketAddress(host, port);
@@ -61,18 +51,14 @@ public class Server implements Runnable {
             channel.closeFuture().sync();
 
         } catch (InterruptedException e) {
-            LOGGER.severe(String.valueOf(e));
+            logger.severe(String.valueOf(e));
         } finally {
             close();
         }
     }
 
     public void close() {
-        try {
-            channel.close();
-        } catch (NullPointerException e) {
-            LOGGER.severe(String.valueOf(e));
-        }
+        super.close();
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
     }
@@ -81,8 +67,9 @@ public class Server implements Runnable {
         return channel;
     }
 
+    @Override
     public void publish(Packet packet) {
-        LOGGER.fine("Publishing to:\t" + channelGroup);
+        logger.fine("Publishing to:\t" + channelGroup);
         channelGroup.writeAndFlush(packet);
     }
 

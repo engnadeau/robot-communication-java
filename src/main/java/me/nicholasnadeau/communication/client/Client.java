@@ -1,31 +1,19 @@
 package me.nicholasnadeau.communication.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import me.nicholasnadeau.communication.AbstractCommunicator;
 import me.nicholasnadeau.robot.communication.packet.PacketProtos;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
+import java.net.InetSocketAddress;
 
-public class Client implements Runnable {
-    static private final Logger LOGGER = Logger.getLogger(Client.class.getSimpleName());
-    private int port;
-    private String host;
-    private Channel channel;
+public class Client extends AbstractCommunicator {
     private EventLoopGroup eventLoopGroup;
-    private Queue<PacketProtos.Packet> incomingQueue = new ConcurrentLinkedQueue<PacketProtos.Packet>();
 
     public Client(String host, int port) {
-        this.port = port;
-        this.host = host;
-    }
-
-    public Channel getChannel() {
-        return channel;
+        inetSocketAddress = new InetSocketAddress(host, port);
     }
 
     @Override
@@ -38,25 +26,24 @@ public class Client implements Runnable {
                     .handler(new ClientInitializer(incomingQueue));
 
             // Make a new connection.
-            channel = b.connect(host, port).sync().channel();
+            channel = b.connect(inetSocketAddress).sync().channel();
             channel.closeFuture().sync();
         } catch (InterruptedException e) {
-            LOGGER.severe(String.valueOf(e));
+            logger.severe(String.valueOf(e));
         } finally {
             close();
         }
     }
 
-    public void close() {
-        try {
-            channel.close();
-        } catch (NullPointerException e) {
-            LOGGER.severe(String.valueOf(e));
-        }
-        eventLoopGroup.shutdownGracefully();
+    @Override
+    public void publish(PacketProtos.Packet packet) {
+        logger.fine("Publishing to:\t" + channel);
+        channel.writeAndFlush(packet);
     }
 
-    public Queue<PacketProtos.Packet> getIncomingQueue() {
-        return incomingQueue;
+    @Override
+    public void close() {
+        super.close();
+        eventLoopGroup.shutdownGracefully();
     }
 }

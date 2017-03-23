@@ -7,7 +7,7 @@ import io.netty.channel.group.ChannelGroup;
 import java.util.logging.Logger;
 
 public class ServerRegistrarHandler extends ChannelInboundHandlerAdapter {
-    static private final Logger LOGGER = Logger.getLogger(ServerRegistrarHandler.class.getSimpleName());
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private ChannelGroup channelGroup;
 
@@ -18,7 +18,7 @@ public class ServerRegistrarHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info("Client connected:\t" + ctx.channel().remoteAddress());
+        logger.info("Client connected:\t" + ctx.channel().remoteAddress());
         channelGroup.add(ctx.channel());
 
         super.channelActive(ctx);
@@ -26,7 +26,7 @@ public class ServerRegistrarHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info("Client disconnected:\t" + ctx.channel().remoteAddress());
+        logger.info("Client disconnected:\t" + ctx.channel().remoteAddress());
 
         super.channelUnregistered(ctx);
     }
