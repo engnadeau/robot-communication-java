@@ -1,6 +1,7 @@
-package me.nicholasnadeau.robot.server;
+package me.nicholasnadeau.robot.server.demo;
 
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
+import me.nicholasnadeau.robot.server.Server;
 
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
