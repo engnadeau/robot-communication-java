@@ -13,6 +13,8 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
 
 import java.net.InetSocketAddress;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 /**
@@ -27,6 +29,7 @@ public class Server implements Runnable {
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
     private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private Queue<Packet> incomingQueue = new ConcurrentLinkedQueue<Packet>();
 
     public Server(String host, int port) {
         this.inetSocketAddress = new InetSocketAddress(host, port);
@@ -50,7 +53,7 @@ public class Server implements Runnable {
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.DEBUG))
-                    .childHandler(new ServerInitializer(channelGroup));
+                    .childHandler(new ServerInitializer(channelGroup, incomingQueue));
 
             channel = bootstrap.bind(inetSocketAddress).sync().channel();
 
@@ -81,5 +84,9 @@ public class Server implements Runnable {
     public void publish(Packet packet) {
         logger.fine("Publishing to:\t" + channelGroup);
         channelGroup.writeAndFlush(packet);
+    }
+
+    public Queue<Packet> getIncomingQueue() {
+        return incomingQueue;
     }
 }

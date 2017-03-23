@@ -9,17 +9,17 @@ import java.util.logging.Logger;
 public class ServerRegistrarHandler extends ChannelInboundHandlerAdapter {
     static private final Logger logger = Logger.getLogger(ServerRegistrarHandler.class.getSimpleName());
 
-    private ChannelGroup statusGroup;
+    private ChannelGroup channelGroup;
 
-    public ServerRegistrarHandler(ChannelGroup statusGroup) {
+    public ServerRegistrarHandler(ChannelGroup channelGroup) {
 
-        this.statusGroup = statusGroup;
+        this.channelGroup = channelGroup;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         logger.info("Client connected:\t" + ctx.channel().remoteAddress());
-        statusGroup.add(ctx.channel());
+        channelGroup.add(ctx.channel());
 
         super.channelActive(ctx);
     }

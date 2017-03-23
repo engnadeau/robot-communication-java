@@ -8,17 +8,19 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
+
+import java.util.Queue;
 
 public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private ChannelGroup statusGroup;
+    private ChannelGroup channelGroup;
+    private Queue<Packet> incomingQueue;
 
-    public ServerInitializer(ChannelGroup statusGroup) {
+    public ServerInitializer(ChannelGroup channelGroup, Queue<Packet> incomingQueue) {
 
-        this.statusGroup = statusGroup;
+        this.channelGroup = channelGroup;
+        this.incomingQueue = incomingQueue;
     }
 
     @Override
@@ -28,7 +30,8 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
         // incoming (top-down order)
         pipeline.addLast(new ProtobufVarint32FrameDecoder());
         pipeline.addLast(new ProtobufDecoder(Packet.getDefaultInstance()));
-        pipeline.addLast(new ServerRegistrarHandler(statusGroup));
+        pipeline.addLast(new ServerRegistrarHandler(channelGroup));
+        pipeline.addLast(new ServerIncomingHandler(incomingQueue));
 
         // outgoing (bottom-up order)
         pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
