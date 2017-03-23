@@ -38,29 +38,10 @@ if (project.hasProperty('tag')) {
 
 shadowJar.archiveName = "$project.name-$project.version-all.jar"
 
-// https://docs.gradle.org/current/userguide/java_plugin.html#sec:java_cross_compilation
-println System.properties.'java.home'
+// set java 1.6 compatibility
 sourceCompatibility = 1.6
-if (System.properties.'java.home'.contains('1.6') || System.properties.'java.home'.contains('java-6')) {
-    def javaExecutablesPath = new File(System.properties.'java.home', 'bin')
-    def javaExecutables = [:].withDefault { execName ->
-        def executable = new File(javaExecutablesPath, execName)
-        assert executable.exists(): "There is no ${execName} executable in ${javaExecutablesPath}"
-        executable
-    }
-    tasks.withType(AbstractCompile) {
-        options.with {
-            fork = true
-            forkOptions.executable = javaExecutables.javac
-        }
-    }
-    tasks.withType(Javadoc) {
-        executable = javaExecutables.javadoc
-    }
-    tasks.withType(Test) {
-        executable = javaExecutables.java
-    }
-    tasks.withType(JavaExec) {
-        executable = javaExecutables.java
-    }
+targetCompatibility = 1.6
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14.1'
 }
