@@ -8,20 +8,12 @@ plugins {
 
 group 'me.nicholasnadeau'
 
-if (project.hasProperty('tag')) {
-    version = project.tag
-} else {
-    version = '0'
-}
-
 sourceCompatibility = 1.6
 
 repositories {
     mavenCentral()
 
-    flatDir {
-        dirs 'lib'
-    }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -36,8 +28,14 @@ dependencies {
     // https://mvnrepository.com/artifact/io.netty/netty-all
     compile group: 'io.netty', name: 'netty-all', version: '4.1.9.Final'
 
-    // local libs
-    compile fileTree(dir: 'libs', include: '*.jar')
+    // https://jitpack.io/#nnadeau/robot-communication-packet-proto
+    compile 'com.github.nnadeau:robot-communication-packet-proto:0.3.0'
+}
+
+if (project.hasProperty('tag')) {
+    version = project.tag
+} else {
+    version = '0'
 }
 
 shadowJar.archiveName = "$project.name-$project.version-all.jar"
