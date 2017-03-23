@@ -2,10 +2,11 @@ language: java
 
 matrix:
   fast_finish: true
-  jdk: oraclejdk7
-  jdk: oraclejdk8
-  jdk: openjdk6
-  jdk: openjdk7
+  include:
+    - jdk: oraclejdk7
+    - jdk: oraclejdk8
+    - jdk: openjdk6
+    - jdk: openjdk7
 
 install:
   - chmod +x gradlew
