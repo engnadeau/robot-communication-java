@@ -41,7 +41,7 @@ shadowJar.archiveName = "$project.name-$project.version-all.jar"
 // https://docs.gradle.org/current/userguide/java_plugin.html#sec:java_cross_compilation
 println System.properties.'java.home'
 sourceCompatibility = 1.6
-if (System.properties.'java.home'.contains('1.6')) {
+if (System.properties.'java.home'.contains('1.6') || System.properties.'java.home'.contains('java-6')) {
     def javaExecutablesPath = new File(System.properties.'java.home', 'bin')
     def javaExecutables = [:].withDefault { execName ->
         def executable = new File(javaExecutablesPath, execName)
