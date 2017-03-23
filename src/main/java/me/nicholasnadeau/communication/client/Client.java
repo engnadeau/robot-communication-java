@@ -38,7 +38,6 @@ public class Client implements Runnable {
                     .handler(new ClientInitializer(incomingQueue));
 
             // Make a new connection.
-
             channel = b.connect(host, port).sync().channel();
             channel.closeFuture().sync();
         } catch (InterruptedException e) {
