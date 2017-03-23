@@ -1,7 +1,11 @@
 language: java
-jdk:
-  - oraclejdk7
-  - openjdk6
+
+matrix:
+  fast_finish: true
+  jdk: oraclejdk7
+  jdk: oraclejdk8
+  jdk: openjdk6
+  jdk: openjdk7
 
 install:
   - chmod +x gradlew
@@ -11,7 +15,7 @@ script:
   - ./gradlew -Ptag=$TRAVIS_TAG build
   - ./gradlew -Ptag=$TRAVIS_TAG shadowJar
 
-after_script":
+after_script:
   - find . -type f
 
 deploy:
