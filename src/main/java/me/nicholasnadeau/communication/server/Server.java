@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * Copyright Nicholas Nadeau 2017.
  */
 public class Server implements Runnable {
-    static private final Logger logger = Logger.getLogger(Server.class.getSimpleName());
+    static private final Logger LOGGER = Logger.getLogger(Server.class.getSimpleName());
     private Channel channel;
     private InetSocketAddress inetSocketAddress;
     private EventLoopGroup workerGroup;
@@ -61,7 +61,7 @@ public class Server implements Runnable {
             channel.closeFuture().sync();
 
         } catch (InterruptedException e) {
-            logger.severe(String.valueOf(e));
+            LOGGER.severe(String.valueOf(e));
         } finally {
             close();
         }
@@ -71,7 +71,7 @@ public class Server implements Runnable {
         try {
             channel.close();
         } catch (NullPointerException e) {
-            logger.severe(String.valueOf(e));
+            LOGGER.severe(String.valueOf(e));
         }
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
@@ -82,7 +82,7 @@ public class Server implements Runnable {
     }
 
     public void publish(Packet packet) {
-        logger.fine("Publishing to:\t" + channelGroup);
+        LOGGER.fine("Publishing to:\t" + channelGroup);
         channelGroup.writeAndFlush(packet);
     }
 

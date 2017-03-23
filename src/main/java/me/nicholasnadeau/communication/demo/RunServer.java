@@ -12,10 +12,10 @@ import java.util.logging.Logger;
  * Copyright Nicholas Nadeau 2017.
  */
 public class RunServer {
-    static private final Logger logger = Logger.getLogger(RunServer.class.getSimpleName());
+    static private final Logger LOGGER = Logger.getLogger(RunServer.class.getSimpleName());
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        logger.fine("JVM version:\t" + System.getProperty("java.version"));
+        LOGGER.fine("JVM version:\t" + System.getProperty("java.version"));
 
         // start server
         final Server server = new Server("localhost", 1234);
@@ -28,8 +28,8 @@ public class RunServer {
         while (!isServerReady) {
             if (server.getChannel() != null) {
                 if (server.getChannel().isActive()) {
-                    logger.fine("Server is ready");
-                    logger.fine("Server channel bound to:\t" + server.getChannel().localAddress());
+                    LOGGER.fine("Server is ready");
+                    LOGGER.fine("Server channel bound to:\t" + server.getChannel().localAddress());
                     isServerReady = true;
                 }
             }
@@ -45,10 +45,10 @@ public class RunServer {
 
                 for (int i = 0; i < 100; i++) {
                     Packet packet = Packet.newBuilder().setCommandId(Packet.CommandID.KEEP_ALIVE).build();
-                    logger.info("Publish:\t" + i);
+                    LOGGER.info("Publish:\t" + i);
                     server.publish(packet);
                     try {
-                        Thread.sleep(1);
+                        Thread.sleep(99);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

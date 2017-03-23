@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 public class Client implements Runnable {
-    static private final Logger logger = Logger.getLogger(Client.class.getSimpleName());
+    static private final Logger LOGGER = Logger.getLogger(Client.class.getSimpleName());
     private int port;
     private String host;
     private Channel channel;
@@ -41,7 +41,7 @@ public class Client implements Runnable {
             channel = b.connect(host, port).sync().channel();
             channel.closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.severe(String.valueOf(e));
+            LOGGER.severe(String.valueOf(e));
         } finally {
             close();
         }
@@ -51,7 +51,7 @@ public class Client implements Runnable {
         try {
             channel.close();
         } catch (NullPointerException e) {
-            logger.severe(String.valueOf(e));
+            LOGGER.severe(String.valueOf(e));
         }
         eventLoopGroup.shutdownGracefully();
     }
