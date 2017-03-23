@@ -11,6 +11,9 @@ script:
   - ./gradlew -Ptag=$TRAVIS_TAG build
   - ./gradlew -Ptag=$TRAVIS_TAG shadowJar
 
+after_script":
+  - find . -type f
+
 deploy:
   skip_cleanup: true
   provider: releases
