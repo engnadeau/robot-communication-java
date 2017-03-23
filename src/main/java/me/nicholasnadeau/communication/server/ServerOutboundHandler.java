@@ -1,4 +1,4 @@
-package me.nicholasnadeau.robot.server;
+package me.nicholasnadeau.communication.server;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

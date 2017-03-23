@@ -1,4 +1,4 @@
-package me.nicholasnadeau.robot.server;
+package me.nicholasnadeau.communication.server;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -24,9 +24,6 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel channel) throws Exception {
         ChannelPipeline pipeline = channel.pipeline();
-
-        // logging
-        pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
 
         // incoming (top-down order)
         pipeline.addLast(new ProtobufVarint32FrameDecoder());

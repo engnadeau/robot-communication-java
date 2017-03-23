@@ -1,7 +1,7 @@
-package me.nicholasnadeau.robot.server.demo;
+package me.nicholasnadeau.communication.demo;
 
+import me.nicholasnadeau.communication.server.Server;
 import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
-import me.nicholasnadeau.robot.server.Server;
 
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
@@ -15,7 +15,7 @@ public class RunServer {
     static private final Logger logger = Logger.getLogger(RunServer.class.getSimpleName());
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        logger.info("JVM version:\t" + System.getProperty("java.version"));
+        logger.fine("JVM version:\t" + System.getProperty("java.version"));
 
         // start server
         final Server server = new Server("localhost", 1234);
@@ -28,8 +28,8 @@ public class RunServer {
         while (!isServerReady) {
             if (server.getChannel() != null) {
                 if (server.getChannel().isActive()) {
-                    logger.info("Server is ready");
-                    logger.info("Server channel bound to:\t" + server.getChannel().localAddress());
+                    logger.fine("Server is ready");
+                    logger.fine("Server channel bound to:\t" + server.getChannel().localAddress());
                     isServerReady = true;
                 }
             }
@@ -39,7 +39,7 @@ public class RunServer {
         Thread testThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (!(server.getStatusGroup().size() > 0)) {
+                while (!(server.getChannelGroup().size() > 0)) {
 
                 }
 

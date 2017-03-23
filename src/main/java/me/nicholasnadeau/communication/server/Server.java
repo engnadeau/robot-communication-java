@@ -1,8 +1,7 @@
-package me.nicholasnadeau.robot.server;
+package me.nicholasnadeau.communication.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -27,14 +26,14 @@ public class Server implements Runnable {
     private InetSocketAddress inetSocketAddress;
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
-    private ChannelGroup statusGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public Server(String host, int port) {
         this.inetSocketAddress = new InetSocketAddress(host, port);
     }
 
-    public ChannelGroup getStatusGroup() {
-        return statusGroup;
+    public ChannelGroup getChannelGroup() {
+        return channelGroup;
     }
 
     public int getPort() {
@@ -51,16 +50,15 @@ public class Server implements Runnable {
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.DEBUG))
-                    .childHandler(new ServerInitializer(statusGroup));
+                    .childHandler(new ServerInitializer(channelGroup));
 
-            final ChannelFuture channelFuture = bootstrap.bind(inetSocketAddress).sync();
-            channel = channelFuture.channel();
+            channel = bootstrap.bind(inetSocketAddress).sync().channel();
 
             // await until channel in closed
             channel.closeFuture().sync();
 
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.severe(String.valueOf(e));
         } finally {
             close();
         }
@@ -70,19 +68,18 @@ public class Server implements Runnable {
         try {
             channel.close();
         } catch (NullPointerException e) {
-
+            logger.severe(String.valueOf(e));
         }
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
     }
-
 
     public Channel getChannel() {
         return channel;
     }
 
     public void publish(Packet packet) {
-        logger.info("Publishing to:\t" + statusGroup);
-        statusGroup.writeAndFlush(packet);
+        logger.fine("Publishing to:\t" + channelGroup);
+        channelGroup.writeAndFlush(packet);
     }
 }
