@@ -1,4 +1,4 @@
-package me.nicholasnadeau.communication.server;
+package me.nicholasnadeau.robot.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -10,8 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import me.nicholasnadeau.communication.AbstractCommunicator;
-import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
+import me.nicholasnadeau.robot.AbstractCommunicator;
+import me.nicholasnadeau.robot.RobotPacketProtos.RobotPacket;
 
 import java.net.InetSocketAddress;
 import java.util.Queue;
@@ -68,12 +68,12 @@ public class Server extends AbstractCommunicator {
     }
 
     @Override
-    public void publish(Packet packet) {
+    public void publish(RobotPacket packet) {
         logger.fine("Publishing to:\t" + channelGroup);
         channelGroup.writeAndFlush(packet);
     }
 
-    public Queue<Packet> getIncomingQueue() {
+    public Queue<RobotPacket> getIncomingQueue() {
         return incomingQueue;
     }
 }

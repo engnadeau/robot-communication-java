@@ -1,4 +1,4 @@
-package me.nicholasnadeau.communication.server;
+package me.nicholasnadeau.robot.server;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -8,16 +8,16 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import me.nicholasnadeau.robot.communication.packet.PacketProtos.Packet;
+import me.nicholasnadeau.robot.RobotPacketProtos.RobotPacket;
 
 import java.util.Queue;
 
 public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private ChannelGroup channelGroup;
-    private Queue<Packet> incomingQueue;
+    private Queue<RobotPacket> incomingQueue;
 
-    public ServerInitializer(ChannelGroup channelGroup, Queue<Packet> incomingQueue) {
+    public ServerInitializer(ChannelGroup channelGroup, Queue<RobotPacket> incomingQueue) {
 
         this.channelGroup = channelGroup;
         this.incomingQueue = incomingQueue;
@@ -29,7 +29,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 
         // incoming (top-down order)
         pipeline.addLast(new ProtobufVarint32FrameDecoder());
-        pipeline.addLast(new ProtobufDecoder(Packet.getDefaultInstance()));
+        pipeline.addLast(new ProtobufDecoder(RobotPacket.getDefaultInstance()));
         pipeline.addLast(new ServerRegistrarHandler(channelGroup));
         pipeline.addLast(new ServerIncomingHandler(incomingQueue));
 

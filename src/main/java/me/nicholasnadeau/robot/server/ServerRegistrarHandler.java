@@ -1,4 +1,4 @@
-package me.nicholasnadeau.communication.server;
+package me.nicholasnadeau.robot.server;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

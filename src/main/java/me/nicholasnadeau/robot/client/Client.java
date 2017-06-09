@@ -1,11 +1,11 @@
-package me.nicholasnadeau.communication.client;
+package me.nicholasnadeau.robot.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import me.nicholasnadeau.communication.AbstractCommunicator;
-import me.nicholasnadeau.robot.communication.packet.PacketProtos;
+import me.nicholasnadeau.robot.AbstractCommunicator;
+import me.nicholasnadeau.robot.RobotPacketProtos.RobotPacket;
 
 import java.net.InetSocketAddress;
 
@@ -36,7 +36,7 @@ public class Client extends AbstractCommunicator {
     }
 
     @Override
-    public void publish(PacketProtos.Packet packet) {
+    public void publish(RobotPacket packet) {
         logger.fine("Publishing to:\t" + channel);
         channel.writeAndFlush(packet);
     }

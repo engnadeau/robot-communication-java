@@ -1,22 +1,18 @@
-package me.nicholasnadeau.communication;
+package me.nicholasnadeau.robot;
 
-import me.nicholasnadeau.communication.client.Client;
-import me.nicholasnadeau.communication.server.Server;
-import me.nicholasnadeau.robot.communication.packet.PacketProtos;
+import me.nicholasnadeau.robot.RobotPacketProtos.RobotPacket;
+import me.nicholasnadeau.robot.client.Client;
+import me.nicholasnadeau.robot.server.Server;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class ServerClientTest {
     final private Logger logger = Logger.getLogger(this.getClass().getSimpleName());
-    int testTime = 5 * 1000;   // ms
-    int numPackets = 50;
-    int packetSendPeriod = testTime / 50;    // ms
+    private int testTime = 5 * 1000;   // ms
+    private int numPackets = 50;
+    private int packetSendPeriod = testTime / 50;    // ms
 
     @Test
     public void serverClientShouldRun() {
@@ -52,7 +48,7 @@ public class ServerClientTest {
         // start test
         long startTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - startTime) < (testTime)) {
-            PacketProtos.Packet packet = client.getIncomingQueue().poll();
+            RobotPacket packet = client.getIncomingQueue().poll();
             if (packet != null) {
                 logger.info(String.valueOf(packet));
             }
@@ -119,7 +115,7 @@ public class ServerClientTest {
 
     private void sendPackets(Server server) {
         for (int i = 0; i < numPackets; i++) {
-            PacketProtos.Packet packet = PacketProtos.Packet.newBuilder().setCommandId(PacketProtos.Packet.CommandID.KEEP_ALIVE).build();
+            RobotPacket packet = RobotPacket.newBuilder().setCommand(RobotPacket.Command.PING).build();
             logger.info("Publish:\t" + i);
             server.publish(packet);
             try {

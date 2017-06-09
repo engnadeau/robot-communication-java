@@ -1,7 +1,7 @@
-package me.nicholasnadeau.communication;
+package me.nicholasnadeau.robot;
 
 import io.netty.channel.Channel;
-import me.nicholasnadeau.robot.communication.packet.PacketProtos;
+import me.nicholasnadeau.robot.RobotPacketProtos.RobotPacket;
 
 import java.net.InetSocketAddress;
 import java.util.Queue;
@@ -12,7 +12,7 @@ public abstract class AbstractCommunicator implements Communicator {
     protected InetSocketAddress inetSocketAddress;
     protected final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     protected Channel channel;
-    protected Queue<PacketProtos.Packet> incomingQueue = new ConcurrentLinkedQueue<PacketProtos.Packet>();
+    protected Queue<RobotPacket> incomingQueue = new ConcurrentLinkedQueue<RobotPacket>();
 
     public int getPort() {
         return inetSocketAddress.getPort();
@@ -36,7 +36,7 @@ public abstract class AbstractCommunicator implements Communicator {
     }
 
 
-    public Queue<PacketProtos.Packet> getIncomingQueue() {
+    public Queue<RobotPacket> getIncomingQueue() {
         return incomingQueue;
     }
 
