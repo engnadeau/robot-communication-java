@@ -27,7 +27,7 @@ dependencies {
     compile group: 'io.netty', name: 'netty-all', version: '4.1.9.Final'
 
     // https://jitpack.io/#nnadeau/robot-communication-packet-proto
-    compile 'com.github.nnadeau:robot-communication-packet-proto:0.3.0'
+    compile 'com.github.nnadeau:robot-communication-packet-proto:+'
 }
 
 if (project.hasProperty('tag')) {
@@ -41,7 +41,3 @@ shadowJar.archiveName = "$project.name-$project.version-all.jar"
 // set java 1.6 compatibility
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.14.1'
-}
